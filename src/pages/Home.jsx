@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebase/firebase";
-import { useNavigate } from "react-router-dom";
 
 import { getPopularMovies } from '../services/movieService';
-import MovieCard from '../components/MovieCard';
+
+import Navbar from "../components/Navbar";
+import Hero from "../components/Hero";
+import MovieRow from "../components/MovieRow";
 
 
 function Home() {
-    const navigate = useNavigate();
 
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,15 +27,6 @@ function Home() {
         };
         fetchMovies();
     },[]);
-    
-    const handleLogout = async() => {
-        try {
-            await signOut(auth);
-            navigate('/login');
-        } catch (error) {
-            console.error("Logout error: ", error);
-        }
-    }
 
     if (loading) {
         return <h2>Loading movies...</h2>
@@ -45,23 +35,21 @@ function Home() {
     if(error) {
         <h2>{error}</h2>
     }
+
+    const featuredMovie = movies[0];
     
     return (
-        <div>
-            <h1>Netflix Clone</h1>
-            <button onClick={handleLogout}>Logout</button>
-            <h2>Popular Movies</h2>
+        <div className="home-page">
+            <Navbar />
+            
+            <Hero movie={featuredMovie} />
 
-            <div>
-                {
-                    movies.map((movie) => (
-                        <MovieCard
-                            key={movie.id}
-                            movie={movie}    
-                        />
-                    ))
-                }
-            </div>
+            <main className="movie-section">
+                <MovieRow
+                    title="Popular Movies"
+                    movies={movies}
+                />
+            </main>
         </div>
     )
 }
